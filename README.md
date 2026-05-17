@@ -1,6 +1,6 @@
 # synthteam (plugin)
 
-A Claude Code plugin for consulting *distilled personas* of colleagues — locally, without involving them. Useful for pressure-testing plans, anticipating pushback, or stress-testing decisions through someone else's lens.
+A plugin for consulting *distilled personas* of colleagues — locally, without involving them. Useful for pressure-testing plans, anticipating pushback, or stress-testing decisions through someone else's lens.
 
 Personas are simulations, not the real people. Verify anything load-bearing with the real humans before acting on it.
 
@@ -83,7 +83,7 @@ synthteam/
 
 ## Installation
 
-This repo is a Claude Code plugin marketplace. Inside Claude Code, add the marketplace, then install the plugin from it.
+This repo is a plugin marketplace. Inside your agent, add the marketplace, then install the plugin from it.
 
 From GitHub:
 
@@ -101,15 +101,15 @@ Or from a local clone (point at the repo directory):
 
 ## Building a persona with distill-slack-persona
 
-Before `ask-colleague` or `ask-team` can do anything, you need at least one persona. You build one entirely by prompting Claude Code — just ask it to distill a colleague:
+Before `ask-colleague` or `ask-team` can do anything, you need at least one persona. You build one entirely by prompting your agent — just ask it to distill a colleague:
 
 ```
 distill alex's persona
 ```
 
-Claude Code triggers the `distill-slack-persona` skill and handles the whole flow for you:
+Your agent triggers the `distill-slack-persona` skill and handles the whole flow for you:
 
-1. **Slack access** — the first time you build a persona, Claude Code will prompt you for a Slack *user* token (`xoxp-…`) and walk you through saving it. You provide the token; it does the rest.
+1. **Slack access** — the first time you build a persona, your agent will prompt you for a Slack *user* token (`xoxp-…`) and walk you through saving it. You provide the token; it does the rest.
 2. **Dump** — it searches that colleague's public Slack messages over a time window, expands the threads they took part in, and stores the raw data locally under `~/.synthteam/assets/<slug>/`. DMs are never touched, and it can't see anything your token can't.
 3. **Distill** — it runs a multi-agent distillation that turns the raw messages into a structured persona doc at `~/.synthteam/personas/<slug>.md`.
 4. **Review** — it spot-checks the result and tells you what it found so you can sanity-check before relying on it.

@@ -1,0 +1,26 @@
+{
+  "name": "synthteam",
+  "version": "1.2.0",
+  "description": "Consult distilled personas of colleagues — build them from Slack history (distill-slack-persona), get a single colleague's take (ask-colleague), or convene a deliberating panel (ask-team).",
+  "author": {
+    "name": "Nick Winder",
+    "email": "nfxdevelopment@gmail.com"
+  },
+  "repository": "https://github.com/nickwinder/synthteam",
+  "license": "MIT",
+  "keywords": ["personas", "brainstorming", "decision-support", "slack"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "synthteam",
+    "shortDescription": "Consult distilled personas of colleagues, locally.",
+    "longDescription": "Build structured personas of colleagues from their Slack history, then consult them locally — get one colleague's likely take with ask-colleague, or convene a deliberating panel with ask-team. Personas capture what someone knows, believes, and how they decide. They are simulations, not the real people.",
+    "developerName": "Nick Winder",
+    "category": "Productivity",
+    "capabilities": ["Interactive"],
+    "defaultPrompt": [
+      "Distill alex's persona from Slack",
+      "Ask alex what they think of this plan",
+      "Ask the team to weigh in on this decision"
+    ]
+  }
+}
