@@ -83,9 +83,11 @@ synthteam/
 
 ## Installation
 
-This repo is a plugin marketplace. Inside your agent, add the marketplace, then install the plugin from it.
+This repo ships as a plugin marketplace for both Claude Code and Codex. Add the marketplace, then install the plugin from it.
 
-From GitHub:
+### Claude Code
+
+Inside Claude Code, from GitHub:
 
 ```
 /plugin marketplace add nickwinder/synthteam
@@ -98,6 +100,19 @@ Or from a local clone (point at the repo directory):
 /plugin marketplace add /absolute/path/to/synthteam
 /plugin install synthteam@synthteam-marketplace
 ```
+
+### Codex
+
+Register the marketplace from the terminal, from GitHub or a local clone:
+
+```
+codex plugin marketplace add nickwinder/synthteam
+# or: codex plugin marketplace add /absolute/path/to/synthteam
+```
+
+Then start `codex`, open the `/plugins` menu, and install **synthteam**. Restart Codex to pick up the new skills.
+
+> `codex plugin marketplace add` only *registers* the marketplace — the `/plugins` menu performs the actual install.
 
 ## Building a persona with distill-slack-persona
 
