@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+
+# Raw Slack dumps and distilled personas now live outside the repo, in the
+# shared data dir ~/.ask-colleague/ — nothing persona-related is committed here.
+# This rule stays as a safety net in case anything lands in-repo.
+assets/
+personas/
+
+# Secrets — never commit .env files.
+.env
+.env.local
+.env.production
+*.pem
+*.key

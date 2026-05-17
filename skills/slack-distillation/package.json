@@ -1,0 +1,13 @@
+{
+  "name": "slack-distillation",
+  "version": "1.0.0",
+  "description": "Dump Slack history for distillation into per-colleague persona docs.",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "dump": "node scripts/dump-user-messages.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.0"
+  }
+}

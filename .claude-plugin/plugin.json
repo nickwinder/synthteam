@@ -1,0 +1,11 @@
+{
+  "name": "synthteam",
+  "version": "1.2.0",
+  "description": "Consult distilled personas of colleagues — build them from Slack history (slack-distillation), get a single colleague's take (ask-colleague), or convene a deliberating panel (ask-team).",
+  "author": {
+    "name": "Nick Winder",
+    "email": "nfxdevelopment@gmail.com"
+  },
+  "keywords": ["personas", "brainstorming", "decision-support", "slack"],
+  "license": "MIT"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "synthteam-marketplace",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Nick Winder",
+    "email": "nfxdevelopment@gmail.com"
+  },
+  "metadata": {
+    "description": "Marketplace hosting the synthteam plugin."
+  },
+  "plugins": [
+    {
+      "name": "synthteam",
+      "source": "./",
+      "version": "1.2.0",
+      "description": "Consult distilled personas of colleagues — build them from Slack history (slack-distillation), get a single colleague's take (ask-colleague), or convene a deliberating panel (ask-team).",
+      "category": "productivity",
+      "author": {
+        "name": "Nick Winder",
+        "email": "nfxdevelopment@gmail.com"
+      }
+    }
+  ]
+}
