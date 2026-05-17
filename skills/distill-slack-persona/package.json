@@ -1,5 +1,5 @@
 {
-  "name": "slack-distillation",
+  "name": "distill-slack-persona",
   "version": "1.0.0",
   "description": "Dump Slack history for distillation into per-colleague persona docs.",
   "type": "commonjs",

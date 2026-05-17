@@ -6,11 +6,11 @@ Personas are simulations, not the real people. Verify anything load-bearing with
 
 ## Skills
 
-The plugin has three skills that split into an *ingestion* side and a *consumption* side. `slack-distillation` **produces** persona docs; `ask-colleague` and `ask-team` **consume** them. Every persona that exists is automatically available to both consuming skills.
+The plugin has three skills that split into an *ingestion* side and a *consumption* side. `distill-slack-persona` **produces** persona docs; `ask-colleague` and `ask-team` **consume** them. Every persona that exists is automatically available to both consuming skills.
 
-### slack-distillation — build a persona
+### distill-slack-persona — build a persona
 
-Turns a colleague's Slack history into a structured **persona doc**: a natural-language description of *what they know, what they believe, and how they decide*. It dumps their channel messages with a script, then runs a multi-agent pipeline that distills the raw messages into five facets (strategic priorities, specific opinions, decision-making patterns, domain knowledge, and operational context). The doc captures **substance, not voice** — no verbatim text, no style mimicry. This is the only skill that writes personas; the others just read them. See [how to use it](#building-a-persona-with-slack-distillation) below.
+Turns a colleague's Slack history into a structured **persona doc**: a natural-language description of *what they know, what they believe, and how they decide*. It dumps their channel messages with a script, then runs a multi-agent pipeline that distills the raw messages into five facets (strategic priorities, specific opinions, decision-making patterns, domain knowledge, and operational context). The doc captures **substance, not voice** — no verbatim text, no style mimicry. This is the only skill that writes personas; the others just read them. See [how to use it](#building-a-persona-with-distill-slack-persona) below.
 
 ### ask-colleague — one person's take
 
@@ -45,7 +45,7 @@ synthteam/
 ├── .env.example                  # SLACK_USER_TOKEN for the dump script
 ├── README.md                     # this file
 └── skills/
-    ├── slack-distillation/       # ingestion: dump Slack + distill personas
+    ├── distill-slack-persona/       # ingestion: dump Slack + distill personas
     │   ├── SKILL.md
     │   ├── README.md
     │   ├── package.json          # node deps for the dump script
@@ -61,49 +61,41 @@ synthteam/
 
 ## Installation
 
-This repo is a Claude Code plugin. Install it locally with:
+This repo is a Claude Code plugin marketplace. Inside Claude Code, add the marketplace, then install the plugin from it.
 
-```bash
-/plugin install file:///absolute/path/to/synthteam
+From GitHub:
+
+```
+/plugin marketplace add nickwinder/synthteam
+/plugin install synthteam@synthteam-marketplace
 ```
 
-## Building a persona with slack-distillation
+Or from a local clone (point at the repo directory):
 
-Before `ask-colleague` or `ask-team` can do anything, you need at least one persona. Personas are built once and refreshed occasionally (monthly is a reasonable cadence) — the consuming skills just read whatever exists.
+```
+/plugin marketplace add /absolute/path/to/synthteam
+/plugin install synthteam@synthteam-marketplace
+```
 
-### One-time setup
+## Building a persona with distill-slack-persona
 
-1. **Install the dump script's deps:**
+Before `ask-colleague` or `ask-team` can do anything, you need at least one persona. You build one entirely by prompting Claude Code — just ask it to distill a colleague:
 
-   ```bash
-   cd skills/slack-distillation
-   npm install
-   ```
+```
+distill alex's persona
+```
 
-2. **Get a Slack user token.** It must be a *user* token (`xoxp-…`) — bot tokens lack `search.messages` access. It needs these scopes: `search:read`, `users:read`, `channels:history`, `groups:history`, `channels:read`, `groups:read`.
+Claude Code triggers the `distill-slack-persona` skill and handles the whole flow for you:
 
-3. **Set the token.** Copy `.env.example` to `.env` and fill in `SLACK_USER_TOKEN`. The script walks up from the working directory to find the `.env`, and `.env` is gitignored.
+1. **Slack access** — the first time you build a persona, Claude Code will prompt you for a Slack *user* token (`xoxp-…`) and walk you through saving it. You provide the token; it does the rest.
+2. **Dump** — it searches that colleague's public Slack messages over a time window, expands the threads they took part in, and stores the raw data locally under `~/.synthteam/assets/<slug>/`. DMs are never touched, and it can't see anything your token can't.
+3. **Distill** — it runs a multi-agent distillation that turns the raw messages into a structured persona doc at `~/.synthteam/personas/<slug>.md`.
+4. **Review** — it spot-checks the result and tells you what it found so you can sanity-check before relying on it.
 
-### Build a persona — three steps
+To **refresh** a persona later, prompt it the same way (`refresh alex's persona`) — monthly is a reasonable cadence. You can also ask for a different time window, e.g. *"distill alex's persona from the last 6 months"*.
 
-The skill runs these for you when, in a Claude Code session, you say something like **"distill alex's persona"** or **"add alex as a colleague"**. Under the hood:
-
-1. **Dump** — the script searches `from:@<user>` over a time window, expands every thread they touched, and writes raw messages locally:
-
-   ```bash
-   node scripts/dump-user-messages.js <slug> [--months=12]
-   ```
-
-   `<slug>` is the colleague's lowercase first name. Output lands in `~/.synthteam/assets/<slug>/`. DMs are excluded by design — personas are grounded in public/channel conversation only, and the script can never exceed the access your token already has.
-
-2. **Distill** — the Claude Code session orchestrates a multi-agent pipeline: it chunks the raw messages, fans out worker subagents to extract per-facet findings, runs one reducer per facet, optionally a critic pass, then assembles the persona doc at `~/.synthteam/personas/<slug>.md`. The full spec lives in `skills/slack-distillation/references/distillation-facets.md`.
-
-3. **Review** — read the finished persona doc, spot-check a few claims against the raw `raw-messages.jsonl`, and run the verbatim-leak sweep (any distinctive shared phrasing is a leak to rewrite). Don't rely on a persona you haven't eyeballed.
-
-**Refreshing** an existing persona is the same three steps — the dump overwrites the raw messages and the distillation rewrites the doc from scratch.
-
-Once a `<slug>.md` exists under `~/.synthteam/personas/`, that colleague is immediately available to both `ask-colleague` and `ask-team`. Full details in the [slack-distillation README](skills/slack-distillation/README.md).
+Once the persona exists, that colleague is immediately available to both `ask-colleague` and `ask-team` — no extra step. Full details in the [distill-slack-persona README](skills/distill-slack-persona/README.md).
 
 ## Privacy
 
-Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [slack-distillation README](skills/slack-distillation/README.md#privacy) for the full notes.
+Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes.

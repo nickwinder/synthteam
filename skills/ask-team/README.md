@@ -4,11 +4,11 @@ Convene a simulated **panel** of Nutrient teammate personas to deliberate a ques
 
 ## Relationship to ask-colleague
 
-`ask-team` is the multi-persona sibling of `ask-colleague`. It does **not** maintain its own personas — it reads the same distilled docs from the shared data dir `~/.synthteam/personas/<slug>.md`. To add, refresh, or review a persona, use the `slack-distillation` skill; every persona in that directory automatically joins `ask-team` panels.
+`ask-team` is the multi-persona sibling of `ask-colleague`. It does **not** maintain its own personas — it reads the same distilled docs from the shared data dir `~/.synthteam/personas/<slug>.md`. To add, refresh, or review a persona, use the `distill-slack-persona` skill; every persona in that directory automatically joins `ask-team` panels.
 
 - **One person's take →** `ask-colleague`
 - **A panel that deliberates and converges →** `ask-team`
-- **Build or refresh a persona →** `slack-distillation`
+- **Build or refresh a persona →** `distill-slack-persona`
 
 ## How it works
 
@@ -27,5 +27,5 @@ Every persona joins every panel and rounds iterate to convergence, so a call is 
 ## Limitations
 
 - The panel is a simulation. The conclusion is a structured prompt for your own judgment, not a decision — verify load-bearing assumptions with the real people.
-- Personas are only as current as the last `slack-distillation` run.
+- Personas are only as current as the last `distill-slack-persona` run.
 - A persistent split at the round cap is reported as-is; the skill will not manufacture consensus.

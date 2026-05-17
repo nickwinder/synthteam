@@ -1,5 +1,5 @@
 ---
-name: slack-distillation
+name: distill-slack-persona
 description: Build or refresh a distilled persona doc for a colleague from their Slack history — dump their channel messages, then run a multi-agent distillation into a structured persona file that the ask-colleague and ask-team skills consume. Use when the user wants to "dump <name>'s Slack", "distill <name>'s persona", "build a persona for <name>", "add <name> as a colleague", "refresh <name>'s persona", or otherwise create/update the source files behind ask-colleague. This is the ingestion-side skill; ask-colleague and ask-team only read what this produces.
 compatibility: Requires Node.js and a Slack user token (SLACK_USER_TOKEN, xoxp-) with search:read, users:read, channels:history, groups:history, channels:read, groups:read scopes. Writes to ~/.synthteam/ (override with SYNTHTEAM_HOME).
 ---

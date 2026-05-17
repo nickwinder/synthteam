@@ -1,8 +1,8 @@
-# slack-distillation
+# distill-slack-persona
 
 The ingestion side of the `synthteam` plugin. It dumps a colleague's Slack history and distills it into a structured **persona doc** that the `ask-colleague` and `ask-team` skills consume.
 
-`slack-distillation` *produces* personas. `ask-colleague` and `ask-team` only *read* them — they have no ingestion logic of their own.
+`distill-slack-persona` *produces* personas. `ask-colleague` and `ask-team` only *read* them — they have no ingestion logic of their own.
 
 ## Shared data directory
 
@@ -21,7 +21,7 @@ This keeps personas alive across plugin reinstalls and reachable by whichever `a
 ## Skill folder layout
 
 ```
-skills/slack-distillation/
+skills/distill-slack-persona/
 ├── SKILL.md                      # the workflow skill (dump → distill → review)
 ├── README.md                     # this file
 ├── package.json                  # node deps for the dump script
@@ -37,7 +37,7 @@ skills/slack-distillation/
 Install the dump script's runtime deps once:
 
 ```bash
-cd skills/slack-distillation
+cd skills/distill-slack-persona
 npm install
 ```
 

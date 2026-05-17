@@ -1,7 +1,7 @@
 ---
 name: ask-colleague
 description: Consult a distilled persona of a colleague for their likely take, critique, or pushback on an idea — locally, without involving them. Use when the user wants to brainstorm, pressure-test a plan, anticipate a reaction, spot missed objections, or stress-test a decision through a specific person's lens. Personas live at ~/.synthteam/personas/<name>.md and capture knowledge, opinions, and decision-making patterns (not voice or style). Invoke when the user says "ask <name>", "what would <name> think", "get <name>'s take", "/ask-colleague <name> ...", or any similar request for a colleague's perspective.
-compatibility: Requires per-colleague persona files at ~/.synthteam/personas/<slug>.md. Use the slack-distillation skill to create or refresh one.
+compatibility: Requires per-colleague persona files at ~/.synthteam/personas/<slug>.md. Use the distill-slack-persona skill to create or refresh one.
 ---
 
 # Ask a Colleague
@@ -18,7 +18,7 @@ The user names a colleague (e.g. `alex`, `Alex`, `@alex`). Normalize to the lowe
 
 If the file does not exist:
 - Stop. Tell the user the persona has not been distilled yet.
-- Point them to the `slack-distillation` skill, which dumps Slack history and builds the persona doc.
+- Point them to the `distill-slack-persona` skill, which dumps Slack history and builds the persona doc.
 - Do not improvise a persona from general knowledge of the company or role.
 
 ## Phase 2 — Load the persona
@@ -68,4 +68,4 @@ This is the sweet spot — surface the critique fully:
 
 ## Refreshing a persona
 
-Refreshing is a separate workflow owned by the `slack-distillation` skill. Do not dump or distill inline during an ask-colleague call — if the persona is stale or missing, point the user at `slack-distillation` and stop.
+Refreshing is a separate workflow owned by the `distill-slack-persona` skill. Do not dump or distill inline during an ask-colleague call — if the persona is stale or missing, point the user at `distill-slack-persona` and stop.

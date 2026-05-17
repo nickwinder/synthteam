@@ -1,7 +1,7 @@
 ---
 name: ask-team
 description: Convene a simulated panel of colleague personas to deliberate a question together — each persona becomes its own research agent, they react to each other's positions over multiple rounds, and the panel converges on a synthesized conclusion. Use when the user wants more than one perspective on a decision, a cross-functional gut-check, a debate between viewpoints, or a comprehensive answer that surfaces where teammates would agree and disagree. Invoke when the user says "ask the team", "/ask-team ...", "what would the team think", "get a panel on this", "run this past everyone", "convene the personas", or asks for multiple colleagues' takes at once. For a single colleague's take, use ask-colleague instead.
-compatibility: Requires distilled persona docs at ~/.synthteam/personas/<slug>.md (built by the slack-distillation skill). Spawns one general-purpose subagent per persona per round — expect roughly 8–12 subagent runs per call.
+compatibility: Requires distilled persona docs at ~/.synthteam/personas/<slug>.md (built by the distill-slack-persona skill). Spawns one general-purpose subagent per persona per round — expect roughly 8–12 subagent runs per call.
 ---
 
 # Ask the Team
@@ -22,7 +22,7 @@ Say: "Convening a simulated panel — <names>. These are substance-focused simul
 
 **Find the personas.** Persona docs live in the shared data dir at `~/.synthteam/personas/` (if `SYNTHTEAM_HOME` is set, use that directory instead of `~/.synthteam`). Every `<slug>.md` file in that directory is a panelist. The whole roster sits on every panel — do not pre-filter by topic.
 
-If the directory is empty or missing, stop and point the user at the `slack-distillation` skill, which dumps Slack history and builds the persona docs.
+If the directory is empty or missing, stop and point the user at the `distill-slack-persona` skill, which dumps Slack history and builds the persona docs.
 
 **Build the briefing packet.** This is the single shared input every persona receives, so assemble it once, carefully:
 - The user's question, stated precisely.

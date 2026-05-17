@@ -14,7 +14,7 @@
       "name": "synthteam",
       "source": "./",
       "version": "1.2.0",
-      "description": "Consult distilled personas of colleagues — build them from Slack history (slack-distillation), get a single colleague's take (ask-colleague), or convene a deliberating panel (ask-team).",
+      "description": "Consult distilled personas of colleagues — build them from Slack history (distill-slack-persona), get a single colleague's take (ask-colleague), or convene a deliberating panel (ask-team).",
       "category": "productivity",
       "author": {
         "name": "Nick Winder",

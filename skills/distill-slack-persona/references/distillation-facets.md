@@ -1,6 +1,6 @@
 # Distillation Facets
 
-This file is the operational spec for the `slack-distillation` skill. It defines the multi-agent pipeline that turns `~/.synthteam/assets/<slug>/raw-messages.jsonl` into a persona doc at `~/.synthteam/personas/<slug>.md`.
+This file is the operational spec for the `distill-slack-persona` skill. It defines the multi-agent pipeline that turns `~/.synthteam/assets/<slug>/raw-messages.jsonl` into a persona doc at `~/.synthteam/personas/<slug>.md`.
 
 Paths use the shared data dir `~/.synthteam` (override with the `SYNTHTEAM_HOME` env var). It lives outside any skill folder so personas survive plugin reinstalls and are reachable by the `ask-colleague` and `ask-team` skills regardless of which are installed.
 
