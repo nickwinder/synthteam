@@ -24,6 +24,28 @@ Convenes a simulated **panel** of all your personas to deliberate a question tog
 
 > Invoke it: `ask the team about <question>`, `run this past everyone`, or `/ask-team …`
 
+## What it looks like
+
+```
+> ask alex about dropping the offline cache
+
+Alex (Staff Engineer) — likely take:
+
+  I'd push back. We added that cache after the Q3 outage when the
+  upstream API flaked for 40 minutes — dropping it reintroduces a
+  single point of failure. If the goal is bundle size, I'd argue
+  for shrinking the cache, not removing it.
+
+  ⚠ Extrapolating: the persona doc has no signal on the *current*
+  reliability numbers — check those with the real Alex.
+```
+
+## When to use this
+
+- **Reach for `ask-colleague`** to pressure-test a plan, anticipate one person's pushback, or surface the objection you'd dodge by not asking.
+- **Reach for `ask-team`** when one perspective isn't enough — cross-functional gut-checks, or decisions that genuinely split a team.
+- **Don't** treat persona output as a sign-off. Personas are simulations built from past Slack history; they miss recent context and anything said outside Slack. Verify load-bearing conclusions with the real humans.
+
 ## Shared data directory
 
 Personas and raw Slack dumps live under `~/.synthteam/` — deliberately outside the plugin so they survive reinstalls and are reachable by whichever skills are installed (override the location with the `SYNTHTEAM_HOME` env var):
@@ -99,3 +121,21 @@ Once the persona exists, that colleague is immediately available to both `ask-co
 ## Privacy
 
 Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes.
+
+## Limitations
+
+- Personas are built from **public Slack history only** — they miss decisions made in DMs, meetings, docs, or code review.
+- They reflect a **point in time**. A persona distilled three months ago won't know about last week's reorg. Refresh monthly.
+- `ask-colleague` and `ask-team` **extrapolate** when the doc is thin, and say so — but extrapolation is still a guess. Treat flagged sections with extra skepticism.
+- Output is a *simulation of reasoning*, not a quote. Never attribute a persona's take to the real person.
+
+## Troubleshooting
+
+- **Slack token rejected** — the dump needs a *user* token (`xoxp-…`), not a bot token. Re-run the distill prompt and provide a fresh token when asked.
+- **Persona feels outdated** — re-run `refresh <name>'s persona`; optionally widen the window (e.g. *"from the last 6 months"*).
+- **`ask-colleague` says it's extrapolating a lot** — the persona doc is thin on that topic. Either accept the lower confidence or distill a longer time window.
+- **A colleague isn't available to `ask-*`** — no persona doc exists yet. Build one first with `distill <name>'s persona`.
+
+## License
+
+MIT — see [marketplace.json](.claude-plugin/marketplace.json) for plugin metadata.
