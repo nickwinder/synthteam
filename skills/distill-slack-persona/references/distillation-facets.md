@@ -10,10 +10,11 @@ The orchestrator is whichever Claude session you're in when you say "distill <na
 
 ## Input
 
-- `~/.synthteam/assets/<slug>/raw-messages.jsonl` — one JSON record per line. Two record shapes:
+- `~/.synthteam/assets/<slug>/raw-messages.jsonl` — one JSON record per line. Supported record shapes:
   - `{"kind": "standalone", "channel_id", "channel_name", "ts", "user", "user_name", "text", "permalink"}`
   - `{"kind": "thread", "channel_id", "channel_name", "thread_ts", "permalink", "messages": [{"ts", "user", "user_name", "text", "is_target_user"}, ...]}`
-- `~/.synthteam/assets/<slug>/metadata.json` — `{"slug", "user_id", "user_name", "real_name", "dumped_at", "months_covered", "date_range": {"from", "to"}, "channels": [{"id", "name", "message_count"}], "total_messages", "total_threads", "search_capped": bool, "excludes": [...]}`
+  - `{"kind": "message_thread", "source", "channel_id", "channel_name", "thread_ts", "permalink", "messages": [{"ts", "user", "user_name", "text", "is_target_user", "attachments"}, ...]}`
+- `~/.synthteam/assets/<slug>/metadata.json` — source-specific metadata plus the common fields `slug`, `source`, `display_name`, `date_range`, `channels`, `total_messages`, `total_threads`, and `search_capped`.
 
 ## Output
 
@@ -26,6 +27,7 @@ display_name: Alex
 real_name: Alex Example
 distilled_from:
   dumped_at: 2026-05-10T...
+  source: slack
   months_covered: 12
   total_messages: ...
   total_threads: ...
@@ -65,6 +67,8 @@ The corpus (~7.7MB JSONL for an active CEO) is too big for a single agent's cont
 - Reads its chunk and the 5 facet definitions below.
 - Makes one pass over the chunk, emitting structured findings for *every* facet — not synthesis yet, just evidence. Format: `{facet: <facet_id>, claim: <one-line>, evidence: [{channel, date, permalink}]}`.
 - Returns its findings JSON.
+
+For imported `message_thread` records, treat `channel_name` as the conversation name and `source` as the evidence context. Use `messages[].is_target_user` to distinguish the persona's own messages from the surrounding conversation. The surrounding messages are context, not direct evidence of the target's beliefs unless the target explicitly responds to or endorses them.
 
 Model: Sonnet for most workers. Worker prompts must explicitly forbid quoting message text.
 

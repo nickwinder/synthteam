@@ -1,0 +1,28 @@
+{
+  "source": "imessage",
+  "target": {
+    "slug": "alex",
+    "display_name": "Alex",
+    "identifiers": ["+15551234567", "alex@example.com"]
+  },
+  "conversation": {
+    "title": "Alex",
+    "participants": ["me@example.com", "+15551234567"]
+  },
+  "messages": [
+    {
+      "id": "p1",
+      "timestamp": "2026-05-01T09:15:00Z",
+      "sender": "alex",
+      "sender_display_name": "Alex",
+      "text": "Example paraphrased or exported message text."
+    },
+    {
+      "id": "p2",
+      "timestamp": "2026-05-01T09:17:00Z",
+      "sender": "me",
+      "sender_display_name": "Me",
+      "text": "Reply text from the local user."
+    }
+  ]
+}

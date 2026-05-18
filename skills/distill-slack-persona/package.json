@@ -5,7 +5,8 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "dump": "node scripts/dump-user-messages.js"
+    "dump": "node scripts/dump-user-messages.js",
+    "import-thread": "node scripts/import-message-thread.js"
   },
   "dependencies": {
     "dotenv": "^17.0.0"

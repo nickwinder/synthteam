@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synthteam.local/message-thread.schema.json",
+  "title": "Synthteam Message Thread Export",
+  "type": "object",
+  "required": ["source", "target", "messages"],
+  "additionalProperties": true,
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "Short source label such as slack, imessage, email, discord, whatsapp, or generic."
+    },
+    "target": {
+      "type": "object",
+      "required": ["slug"],
+      "additionalProperties": true,
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "display_name": { "type": "string" },
+        "identifiers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "conversation": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "title": { "type": "string" },
+        "participants": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "sender", "text"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": ["string", "number"] },
+          "timestamp": {
+            "type": "string",
+            "description": "ISO-8601 timestamp if available."
+          },
+          "sender": { "type": "string" },
+          "sender_display_name": { "type": "string" },
+          "text": { "type": "string" },
+          "thread_id": { "type": "string" },
+          "permalink": { "type": "string" },
+          "attachments": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

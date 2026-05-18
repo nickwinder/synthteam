@@ -10,7 +10,7 @@ The plugin has three skills that split into an *ingestion* side and a *consumpti
 
 ### distill-slack-persona — build a persona
 
-Turns a colleague's Slack history into a structured **persona doc**: a natural-language description of *what they know, what they believe, and how they decide*. It dumps their channel messages with a script, then runs a multi-agent pipeline that distills the raw messages into five facets (strategic priorities, specific opinions, decision-making patterns, domain knowledge, and operational context). The doc captures **substance, not voice** — no verbatim text, no style mimicry. This is the only skill that writes personas; the others just read them. See [how to use it](#building-a-persona-with-distill-slack-persona) below.
+Turns a colleague's message history into a structured **persona doc**: a natural-language description of *what they know, what they believe, and how they decide*. It can dump Slack channel messages or import an already-exported thread such as iMessage, email, Discord, or WhatsApp, then runs a multi-agent pipeline that distills the raw messages into five facets (strategic priorities, specific opinions, decision-making patterns, domain knowledge, and operational context). The doc captures **substance, not voice** — no verbatim text, no style mimicry. This is the only skill that writes personas; the others just read them. See [how to use it](#building-a-persona-with-distill-slack-persona) below.
 
 ### ask-colleague — one person's take
 
@@ -52,7 +52,7 @@ Personas and raw Slack dumps live under `~/.synthteam/` — deliberately outside
 
 ```
 ~/.synthteam/
-├── assets/<slug>/          # raw Slack dumps — local-only, never committed
+├── assets/<slug>/          # raw message dumps — local-only, never committed
 │   ├── raw-messages.jsonl
 │   └── metadata.json
 └── personas/<slug>.md      # the distilled persona docs the ask-* skills read
@@ -126,7 +126,7 @@ distill alex's persona
 Your agent triggers the `distill-slack-persona` skill and handles the whole flow for you:
 
 1. **Slack access** — the first time you build a persona, your agent will prompt you for a Slack *user* token (`xoxp-…`) and walk you through saving it. You provide the token; it does the rest.
-2. **Dump** — it searches that colleague's public Slack messages over a time window, expands the threads they took part in, and stores the raw data locally under `~/.synthteam/assets/<slug>/`. DMs are never touched, and it can't see anything your token can't.
+2. **Ingest** — for Slack, it searches that colleague's public Slack messages over a time window, expands the threads they took part in, and stores the raw data locally under `~/.synthteam/assets/<slug>/`. For iMessage or another message source, it imports a JSON/JSONL thread export into the same raw data shape.
 3. **Distill** — it runs a multi-agent distillation that turns the raw messages into a structured persona doc at `~/.synthteam/personas/<slug>.md`.
 4. **Review** — it spot-checks the result and tells you what it found so you can sanity-check before relying on it.
 
@@ -134,9 +134,34 @@ To **refresh** a persona later, prompt it the same way (`refresh alex's persona`
 
 Once the persona exists, that colleague is immediately available to both `ask-colleague` and `ask-team` — no extra step. Full details in the [distill-slack-persona README](skills/distill-slack-persona/README.md).
 
+## Importing iMessage or another thread
+
+For a private decision-support persona from iMessage, pass synthteam a local export rather than letting it silently inspect Messages. The preferred shape is:
+
+```json
+{
+  "source": "imessage",
+  "target": { "slug": "alex", "display_name": "Alex" },
+  "conversation": { "title": "Alex" },
+  "messages": [
+    { "timestamp": "2026-05-01T09:15:00Z", "sender": "alex", "text": "message text" },
+    { "timestamp": "2026-05-01T09:17:00Z", "sender": "me", "text": "reply text" }
+  ]
+}
+```
+
+Run:
+
+```bash
+cd skills/distill-slack-persona
+node scripts/import-message-thread.js --input /path/to/thread.json --slug alex --source=imessage
+```
+
+After that, distillation works exactly like Slack: the importer writes `~/.synthteam/assets/alex/raw-messages.jsonl` and `metadata.json`, then the skill produces `~/.synthteam/personas/alex.md`.
+
 ## Privacy
 
-Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes, and [Legal & compliance](#legal--compliance) below for the regulatory side (GDPR, works councils, employee-privacy law).
+Raw message data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The Slack dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes, and [Legal & compliance](#legal--compliance) below for the regulatory side (GDPR, works councils, employee-privacy law).
 
 ## Legal & compliance
 
@@ -151,7 +176,7 @@ consult a qualified lawyer.
 
 ## Limitations
 
-- Personas are built from **public Slack history only** — they miss decisions made in DMs, meetings, docs, or code review.
+- Personas are built from the **message sources you ingest** — they miss decisions made outside those sources, such as meetings, docs, code review, or other private threads.
 - They reflect a **point in time**. A persona distilled three months ago won't know about last week's reorg. Refresh monthly.
 - `ask-colleague` and `ask-team` **extrapolate** when the doc is thin, and say so — but extrapolation is still a guess. Treat flagged sections with extra skepticism.
 - Output is a *simulation of reasoning*, not a quote. Never attribute a persona's take to the real person.

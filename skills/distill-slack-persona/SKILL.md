@@ -1,12 +1,12 @@
 ---
 name: distill-slack-persona
-description: Build or refresh a distilled persona doc for a colleague from their Slack history — dump their channel messages, then run a multi-agent distillation into a structured persona file that the ask-colleague and ask-team skills consume. Use when the user wants to "dump <name>'s Slack", "distill <name>'s persona", "build a persona for <name>", "add <name> as a colleague", "refresh <name>'s persona", or otherwise create/update the source files behind ask-colleague. This is the ingestion-side skill; ask-colleague and ask-team only read what this produces.
-compatibility: Requires Node.js and a Slack user token (SLACK_USER_TOKEN, xoxp-) with search:read, users:read, channels:history, groups:history, channels:read, groups:read scopes. Writes to ~/.synthteam/ (override with SYNTHTEAM_HOME).
+description: Build or refresh a distilled persona doc for a colleague from message history — either dump Slack channel messages or import an already-exported message thread such as iMessage, email, Discord, WhatsApp, or another chat transcript. Use when the user wants to "dump <name>'s Slack", "import <name>'s iMessage thread", "distill <name>'s persona", "build a persona for <name>", "add <name> as a colleague", "refresh <name>'s persona", or otherwise create/update the source files behind ask-colleague. This is the ingestion-side skill; ask-colleague and ask-team only read what this produces.
+compatibility: Requires Node.js. Slack dump mode requires a Slack user token (SLACK_USER_TOKEN, xoxp-) with search:read, users:read, channels:history, groups:history, channels:read, groups:read scopes. Thread-import mode requires a local JSON/JSONL export. Writes to ~/.synthteam/ (override with SYNTHTEAM_HOME).
 ---
 
-# Slack Distillation
+# Message Distillation
 
-Turn a colleague's Slack history into a distilled **persona doc** — a natural-language description of *what they know, what they believe, and how they decide*. The persona docs produced here are the sole input to the `ask-colleague` and `ask-team` skills.
+Turn a colleague's message history into a distilled **persona doc** — a natural-language description of *what they know, what they believe, and how they decide*. The persona docs produced here are the sole input to the `ask-colleague` and `ask-team` skills.
 
 A persona doc captures **substance, not voice**. No verbatim message text, no tone/style mimicry — patterns and positions only.
 
@@ -16,7 +16,7 @@ Everything lives under `~/.synthteam/` (override with the `SYNTHTEAM_HOME` env v
 
 ```
 ~/.synthteam/
-├── assets/<slug>/          # raw Slack dumps — local-only, never commit
+├── assets/<slug>/          # raw message dumps — local-only, never commit
 │   ├── raw-messages.jsonl
 │   └── metadata.json
 └── personas/<slug>.md      # the distilled persona doc — the deliverable
@@ -28,11 +28,15 @@ Everything lives under `~/.synthteam/` (override with the `SYNTHTEAM_HOME` env v
 
 Step 1 is mechanical (a script). Step 2 is the agent-driven distillation. Step 3 is human review. Do them in order — distillation needs the dump, review needs the doc.
 
-### Step 1 — Dump their Slack messages
+### Step 1 — Get message data into synthteam
 
-The dump script lives in this skill at `scripts/dump-user-messages.js`. It needs `SLACK_USER_TOKEN` in a `.env` file (see the repo `.env.example`; `loadEnv` walks up from the cwd to find it).
+Use exactly one ingestion path.
 
-First install its runtime deps once:
+#### Option A: Dump Slack messages
+
+The Slack dump script lives in this skill at `scripts/dump-user-messages.js`. It needs `SLACK_USER_TOKEN` in a `.env` file (see the repo `.env.example`; `loadEnv` walks up from the cwd to find it).
+
+First install runtime deps once:
 
 ```bash
 cd <this-skill>/  &&  npm install
@@ -45,6 +49,54 @@ node scripts/dump-user-messages.js <slug> [--months=12]
 ```
 
 The script resolves `<slug>` to a Slack user, runs `search.messages` with `from:@<username>` over the time window, expands every thread the user touched, and writes `raw-messages.jsonl` + `metadata.json` into `~/.synthteam/assets/<slug>/`. DMs and multi-person DMs are excluded by design — personas are grounded in public/channel conversation only. It only reads what the authenticating token can already see.
+
+#### Option B: Import an exported thread
+
+For iMessage or any other already-exported thread, do not read private message databases directly unless the user has explicitly supplied the export or approved the exact source. Ask the user for a local JSON/JSONL export, or help them produce one, then normalize it:
+
+```bash
+node scripts/import-message-thread.js --input /path/to/thread.json --slug <slug> --source=imessage
+```
+
+Preferred input is a JSON object:
+
+```json
+{
+  "source": "imessage",
+  "target": {
+    "slug": "alex",
+    "display_name": "Alex",
+    "identifiers": ["+15551234567", "alex@example.com"]
+  },
+  "conversation": {
+    "title": "Alex",
+    "participants": ["me@example.com", "+15551234567"]
+  },
+  "messages": [
+    {
+      "timestamp": "2026-05-01T09:15:00Z",
+      "sender": "alex",
+      "sender_display_name": "Alex",
+      "text": "message text"
+    },
+    {
+      "timestamp": "2026-05-01T09:17:00Z",
+      "sender": "me",
+      "sender_display_name": "Me",
+      "text": "reply text"
+    }
+  ]
+}
+```
+
+The importer also accepts a JSON array or JSONL with one message object per line. Message objects may use `timestamp`, `date`, `created_at`, or `time`; `sender`, `from`, `author`, or `handle`; and `text`, `body`, or `message`. Use `sender_slug` or `is_target_user: true` if the sender string does not exactly match `<slug>`.
+
+iMessage usually reaches this skill as one of:
+- A JSON export from a tool such as `imessage-exporter`, converted to the schema above.
+- A CSV/JSON file produced from a read-only query against a copied `chat.db`, not the live database.
+- A pasted or saved transcript that the agent converts into the JSON object above.
+
+The important rule is that the transcript must preserve message order, timestamp, sender, and text. Attachments can be listed by filename, but the importer does not read attachment contents.
 
 ### Step 2 — Distill the persona
 
@@ -64,7 +116,7 @@ Same three steps. The dump script overwrites `raw-messages.jsonl` (the time wind
 
 ## Privacy
 
-- **Raw Slack data stays local.** `~/.synthteam/assets/` should never be committed to a repo. Verbatim message text never belongs in the persona doc.
+- **Raw message data stays local.** `~/.synthteam/assets/` should never be committed to a repo. Verbatim message text never belongs in the persona doc.
 - **Persona docs describe what someone believes and how they decide.** Even paraphrased, that is sensitive. Treat `~/.synthteam/personas/` as private notes about colleagues. Before adding anyone, consider whether they'd be comfortable with the persona existing.
 - The dump script cannot exceed the Slack access the user's token already has, and excludes DMs entirely.
 
