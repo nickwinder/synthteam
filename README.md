@@ -66,6 +66,7 @@ synthteam/
 │   └── plugin.json               # plugin manifest
 ├── .env.example                  # SLACK_USER_TOKEN for the dump script
 ├── README.md                     # this file
+├── COMPLIANCE.md                  # GDPR / works-council / privacy-law notes
 └── skills/
     ├── distill-slack-persona/       # ingestion: dump Slack + distill personas
     │   ├── SKILL.md
@@ -135,7 +136,18 @@ Once the persona exists, that colleague is immediately available to both `ask-co
 
 ## Privacy
 
-Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes.
+Raw Slack data and persona docs stay on your machine in `~/.synthteam/` — nothing persona-related is committed to this repo. Persona docs describe what someone believes and how they decide; treat them as private notes about colleagues. The dump script cannot exceed the Slack access your token already has, and excludes DMs entirely. See the [distill-slack-persona README](skills/distill-slack-persona/README.md#privacy) for the full notes, and [Legal & compliance](#legal--compliance) below for the regulatory side (GDPR, works councils, employee-privacy law).
+
+## Legal & compliance
+
+synthteam profiles **real, identifiable people** from their workplace
+communication. Depending on where you and your colleagues are based, that may be
+regulated by data-protection, privacy, or employment law.
+
+**It is on you to understand and comply with the law that applies to you.** See
+[COMPLIANCE.md](COMPLIANCE.md) — which links to some relevant acts for
+informational purposes only. None of this is legal advice; if you are unsure,
+consult a qualified lawyer.
 
 ## Limitations
 
